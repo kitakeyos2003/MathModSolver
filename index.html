@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathModSolver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 10px auto;
+            width: 40%; 
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Euclid Inversion</h2>
+        <div class="input-group">
+            <label for="euclidA">Enter a number:</label>
+            <input type="number" id="euclidA">
+        </div>
+        <div class="input-group">
+            <label for="euclidN">Enter the modulus:</label>
+            <input type="number" id="euclidN">
+        </div>
+        <button onclick="calculateEuclid()">Calculate</button>
+        <div class="result" id="resultEuclid"></div>
+    </div>
+    <div class="container">
+        <h2>Greatest Common Divisor</h2>
+        <div class="input-group">
+            <label for="gcdA">Enter value for 'a':</label>
+            <input type="number" id="gcdA">
+        </div>
+        <div class="input-group">
+            <label for="gcdB">Enter value for 'b':</label>
+            <input type="number" id="gcdB">
+        </div>
+        <button onclick="calculateGCD()">Calculate</button>
+        <div class="result" id="resultGCD"></div>
+    </div>
+    <div class="container">
+        <h2>Modular Inverse</h2>
+        <div class="input-group">
+            <label for="number">Enter a number:</label>
+            <input type="number" id="number">
+        </div>
+        <div class="input-group">
+            <label for="modulus">Enter the modulus:</label>
+            <input type="number" id="modulus">
+        </div>
+        <button onclick="calculateModularInverse()">Calculate</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>Euler's Totient Function</h2>
+        <div class="input-group">
+            <label for="inputEuler">Enter value for 'n':</label>
+            <input type="number" id="inputEuler">
+        </div>
+        <button onclick="calculateEulerFunction()">Calculate</button>
+        <div class="result" id="resultEulerFunction"></div>
+    </div>
+
+    <div class="container">
+        <h2>Discrete Logarithm Solver</h2>
+        <div class="input-group">
+            <label for="base">Enter base:</label>
+            <input type="number" id="base">
+        </div>
+        <div class="input-group">
+            <label for="result">Enter result:</label>
+            <input type="number" id="result">
+        </div>
+        <div class="input-group">
+            <label for="modulo">Enter modulo:</label>
+            <input type="number" id="modulo">
+        </div>
+        <button onclick="calculateDiscreteLog()">Calculate</button>
+        <div class="result" id="discreteLogResult"></div>
+    </div>
+
+    <script>
+
+        function calculateEuclid() {
+            let a = parseInt(document.getElementById("euclidA").value);
+            let n = parseInt(document.getElementById("euclidN").value);
+            invert(a, n);
+        }
+
+        function calculateGCD() {
+            let a = parseInt(document.getElementById("gcdA").value);
+            let b = parseInt(document.getElementById("gcdB").value);
+            let result = gcd(a, b);
+            document.getElementById("resultGCD").innerText = "Result: " + result;
+        }
+
+        function calculateModularInverse() {
+            let number = parseInt(document.getElementById("number").value);
+            let modulus = parseInt(document.getElementById("modulus").value);
+            
+            let result = modInverse(number, modulus);
+            
+            if (result !== null) {
+                document.getElementById("result").innerText = "Modular Inverse: " + result;
+            } else {
+                document.getElementById("result").innerText = "Modular Inverse does not exist.";
+            }
+        }
+
+        function calculateEulerFunction() {
+            let n = parseInt(document.getElementById("inputEuler").value);
+            let result = eulerFunction(n);
+            document.getElementById("resultEulerFunction").innerText = "Euler's Totient Function of " + n + " is: " + result;
+        }
+
+        function calculateDiscreteLog() {
+            let base = parseInt(document.getElementById("base").value);
+            let result = parseInt(document.getElementById("result").value);
+            let modulo = parseInt(document.getElementById("modulo").value);
+            let x = discreteLog(base, result, modulo);
+            if (x !== -1) {
+                document.getElementById("discreteLogResult").innerText = "The value of x is: " + x;
+            } else {
+                document.getElementById("discreteLogResult").innerText = "No solution exists.";
+            }
+        }
+
+        function invert(a, n) {
+            let g = new Array(100);
+            let u = new Array(100);
+            let v = new Array(100);
+            let y = new Array(100);
+            g[0] = n;
+            g[1] = a;
+            u[0] = 1;
+            u[1] = 0;
+            v[0] = 0;
+            v[1] = 1;
+            y[0] = " ";
+            let i = 1;
+
+            while (g[i] != 0) {
+                y[i] = Math.floor(g[i - 1] / g[i]);
+                g[i + 1] = g[i - 1] - y[i] * g[i];
+                u[i + 1] = u[i - 1] - y[i] * u[i];
+                v[i + 1] = v[i - 1] - y[i] * v[i];
+                i++;
+            }
+            let output = "<table><tr><th>i</th><th>g</th><th>u</th><th>v</th><th>y</th></tr>";
+            for (let j = 0; j < i; j++) {
+                output += "<tr><td>" + (j + 1) + "</td><td>" + g[j] + "</td><td>" + u[j] + "</td><td>" + v[j] + "</td><td>" + y[j] + "</td></tr>";
+            }
+            let t = v[i - 1]; if (t > 0) {
+                output += "<tr><td colspan='5'><strong>t: " + t + "</strong></td></tr>";
+            } else {
+                output += "<tr><td colspan='5'><strong>t: " + (t + n) + "</strong></td></tr>";
+            }
+            output += "</table>";
+            document.getElementById("resultEuclid").innerHTML = output;
+        }
+
+        function gcd(a, b) {
+            while (b !== 0) {
+                let r = a % b;
+                a = b;
+                b = r;
+            }
+            return a;
+        }
+
+        function gcdExtended(a, b) {
+            let x = 0, y = 1, u = 1, v = 0;
+            while (a !== 0) {
+                let q = Math.floor(b / a);
+                let r = b % a;
+                let m = x - u * q;
+                let n = y - v * q;
+                b = a;
+                a = r;
+                x = u;
+                y = v;
+                u = m;
+                v = n;
+            }
+            return [b, x, y];
+        }
+
+        function modInverse(a, m) {
+            let [gcd, x, y] = gcdExtended(a, m);
+            if (gcd !== 1) {
+                return null;
+            } else {
+                return (x % m + m) % m;
+            }
+        }
+
+        function eulerFunction(n) {
+            let result = n;
+            for (let p = 2; p * p <= n; ++p) {
+                if (n % p == 0) {
+                    while (n % p == 0) {
+                        n /= p;
+                    }
+                    result -= result / p;
+                }
+            }
+            if (n > 1) {
+                result -= result / n;
+            }
+            return result;
+        }
+
+        function discreteLog(base, result, modulo) {
+            let exponent = 0;
+            let value = 1;
+            while (value !== result) {
+                value = (value * base) % modulo;
+                exponent++;
+                if (exponent > modulo) {
+                    return -1;
+                }
+            }
+            return exponent;
+        }
+    </script>
+</body>
+
+</html>
