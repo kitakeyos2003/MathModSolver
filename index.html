@@ -134,25 +134,37 @@
     </div>
 
     <div class="container">
-        <h2>Discrete Logarithm Solver</h2>
+        <h2>Modulo</h2>
         <div class="input-group">
-            <label for="base">Enter base:</label>
-            <input type="number" id="base">
+            <label for="modNumber">Enter number:</label>
+            <input type="number" id="modNumber">
         </div>
         <div class="input-group">
-            <label for="result">Enter result:</label>
-            <input type="number" id="result">
+            <label for="modModulus">Enter modulus:</label>
+            <input type="number" id="modModulus">
         </div>
-        <div class="input-group">
-            <label for="modulo">Enter modulo:</label>
-            <input type="number" id="modulo">
-        </div>
-        <button onclick="calculateDiscreteLog()">Calculate</button>
-        <div class="result" id="discreteLogResult"></div>
+        <button onclick="calculateMod()">Calculate</button>
+        <div class="result" id="resultMod"></div>
     </div>
 
+    <div class="container">
+        <h2>Exponential Modulo</h2>
+        <div class="input-group">
+            <label for="expBase">Enter base:</label>
+            <input type="number" id="expBase">
+        </div>
+        <div class="input-group">
+            <label for="expExponent">Enter exponent:</label>
+            <input type="number" id="expExponent" value="1">
+        </div>
+        <div class="input-group">
+            <label for="expModulus">Enter modulus:</label>
+            <input type="number" id="expModulus">
+        </div>
+        <button onclick="calculateExpMod()">Calculate</button>
+        <div class="result" id="resultExpMod"></div>
+    </div>
     <script>
-
         function calculateEuclid() {
             let a = parseInt(document.getElementById("euclidA").value);
             let n = parseInt(document.getElementById("euclidN").value);
@@ -185,16 +197,19 @@
             document.getElementById("resultEulerFunction").innerText = "Euler's Totient Function of " + n + " is: " + result;
         }
 
-        function calculateDiscreteLog() {
-            let base = parseInt(document.getElementById("base").value);
-            let result = parseInt(document.getElementById("result").value);
-            let modulo = parseInt(document.getElementById("modulo").value);
-            let x = discreteLog(base, result, modulo);
-            if (x !== -1) {
-                document.getElementById("discreteLogResult").innerText = "The value of x is: " + x;
-            } else {
-                document.getElementById("discreteLogResult").innerText = "No solution exists.";
-            }
+        function calculateMod() {
+            let number = parseInt(document.getElementById("modNumber").value);
+            let modulus = parseInt(document.getElementById("modModulus").value);
+            let result = number % modulus;
+            document.getElementById("resultMod").innerText = "Result: " + result;
+        }
+
+        function calculateExpMod() {
+            let base = parseInt(document.getElementById("expBase").value);
+            let exponent = parseInt(document.getElementById("expExponent").value);
+            let modulus = parseInt(document.getElementById("expModulus").value);
+            let result = modularExponentiation(base, exponent, modulus);
+            document.getElementById("resultExpMod").innerText = "Result: " + result;
         }
 
         function invert(a, n) {
@@ -218,7 +233,7 @@
                 v[i + 1] = v[i - 1] - y[i] * v[i];
                 i++;
             }
-            let output = "<table><tr><th>i</th><th>g</th><th>u</th><th>v</th><th>y</th></tr>";
+            let output = "<table><tr><th> </th><th>G</th><th>U</th><th>V</th><th>y</th></tr>";
             for (let j = 0; j < i; j++) {
                 output += "<tr><td>" + (j + 1) + "</td><td>" + g[j] + "</td><td>" + u[j] + "</td><td>" + v[j] + "</td><td>" + y[j] + "</td></tr>";
             }
@@ -281,18 +296,19 @@
             }
             return result;
         }
-
-        function discreteLog(base, result, modulo) {
-            let exponent = 0;
-            let value = 1;
-            while (value !== result) {
-                value = (value * base) % modulo;
-                exponent++;
-                if (exponent > modulo) {
-                    return -1;
+        
+        function modularExponentiation(base, exponent, modulus) {
+            if (modulus === 1) return 0;
+            let result = 1;
+            base = base % modulus;
+            while (exponent > 0) {
+                if (exponent % 2 === 1) {
+                    result = (result * base) % modulus;
                 }
+                exponent = Math.floor(exponent / 2);
+                base = (base * base) % modulus;
             }
-            return exponent;
+            return result;
         }
     </script>
 </body>
