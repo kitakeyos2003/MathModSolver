@@ -84,19 +84,6 @@
 
 <body>
     <div class="container">
-        <h2>Euclid Inversion</h2>
-        <div class="input-group">
-            <label for="euclidA">Enter a number:</label>
-            <input type="number" id="euclidA">
-        </div>
-        <div class="input-group">
-            <label for="euclidN">Enter the modulus:</label>
-            <input type="number" id="euclidN">
-        </div>
-        <button onclick="calculateEuclid()">Calculate</button>
-        <div class="result" id="resultEuclid"></div>
-    </div>
-    <div class="container">
         <h2>Greatest Common Divisor</h2>
         <div class="input-group">
             <label for="gcdA">Enter value for 'a':</label>
@@ -109,6 +96,21 @@
         <button onclick="calculateGCD()">Calculate</button>
         <div class="result" id="resultGCD"></div>
     </div>
+
+    <div class="container">
+        <h2>Euclid Inversion</h2>
+        <div class="input-group">
+            <label for="euclidA">Enter a number:</label>
+            <input type="number" id="euclidA">
+        </div>
+        <div class="input-group">
+            <label for="euclidN">Enter the modulus:</label>
+            <input type="number" id="euclidN">
+        </div>
+        <button onclick="calculateEuclid()">Calculate</button>
+        <div class="result" id="resultEuclid"></div>
+    </div>
+
     <div class="container">
         <h2>Modular Inverse</h2>
         <div class="input-group">
@@ -134,36 +136,23 @@
     </div>
 
     <div class="container">
-        <h2>Modulo</h2>
+        <h2>Chinese Remainder Theorem</h2>
         <div class="input-group">
-            <label for="modNumber">Enter number:</label>
-            <input type="number" id="modNumber">
+            <label for="eq1">Equation 1:</label>
+            <input type="text" id="eq1" placeholder="e.g., x = 39 mod 16" value="x = 39 mod 16">
         </div>
         <div class="input-group">
-            <label for="modModulus">Enter modulus:</label>
-            <input type="number" id="modModulus">
+            <label for="eq2">Equation 2:</label>
+            <input type="text" id="eq2" placeholder="e.g., x = 10 mod 17" value="x = 10 mod 17">
         </div>
-        <button onclick="calculateMod()">Calculate</button>
-        <div class="result" id="resultMod"></div>
+        <div class="input-group">
+            <label for="eq3">Equation 3:</label>
+            <input type="text" id="eq3" placeholder="e.g., x = 45 mod 11" value="x = 45 mod 11">
+        </div>
+        <button onclick="calculateCRT()">Calculate</button>
+        <div class="result" id="resultCRT"></div>
     </div>
 
-    <div class="container">
-        <h2>Exponential Modulo</h2>
-        <div class="input-group">
-            <label for="expBase">Enter base:</label>
-            <input type="number" id="expBase">
-        </div>
-        <div class="input-group">
-            <label for="expExponent">Enter exponent:</label>
-            <input type="number" id="expExponent" value="1">
-        </div>
-        <div class="input-group">
-            <label for="expModulus">Enter modulus:</label>
-            <input type="number" id="expModulus">
-        </div>
-        <button onclick="calculateExpMod()">Calculate</button>
-        <div class="result" id="resultExpMod"></div>
-    </div>
     <script>
         function calculateEuclid() {
             let a = parseInt(document.getElementById("euclidA").value);
@@ -210,6 +199,34 @@
             let modulus = parseInt(document.getElementById("expModulus").value);
             let result = modularExponentiation(base, exponent, modulus);
             document.getElementById("resultExpMod").innerText = "Result: " + result;
+        }
+
+        function calculateCRT() {
+            let eq1 = document.getElementById("eq1").value;
+            let eq2 = document.getElementById("eq2").value;
+            let eq3 = document.getElementById("eq3").value;
+
+            let [a1, m1] = parseEquation(eq1);
+            let [a2, m2] = parseEquation(eq2);
+            let [a3, m3] = parseEquation(eq3);
+
+            let M = m1 * m2 * m3;
+            let M1 = M / m1;
+            let M2 = M / m2;
+            let M3 = M / m3;
+
+            let result = (a1 * modInverse(M1, m1) * M1 +
+                          a2 * modInverse(M2, m2) * M2 +
+                          a3 * modInverse(M3, m3) * M3) % M;
+
+            document.getElementById("resultCRT").innerText = "Solution: " + result;
+        }
+
+        function parseEquation(eq) {
+            let parts = eq.split(" = ");
+            let a = parseInt(parts[1].split(" ")[0]);
+            let m = parseInt(parts[1].split(" ")[2]);
+            return [a, m];
         }
 
         function invert(a, n) {
